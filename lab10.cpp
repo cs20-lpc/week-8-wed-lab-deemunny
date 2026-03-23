@@ -10,6 +10,11 @@ using namespace std;
 double gRec(unsigned);
 double gStack(unsigned);
 
+struct Frame {  // because funny
+    unsigned i;
+    bool done;
+};
+
 /*******************************************************************************
  * Description:
  * Starting point of the program. Calls two functions in two different ways:
@@ -70,7 +75,48 @@ double gRec(unsigned i) {
  * Output:
  * The result of 1.1n + 3.2, where n is the depth of recursion
 *******************************************************************************/
+// this way felt boring
+
+// double gStack(unsigned i) {
+//     ArrayStack<unsigned> recStack;
+
+//     while (i > 0) {
+//         recStack.push(i);
+//         --i;
+//     }    
+
+//     double result = 3.2;
+//     cout << "Base case!\n";
+
+//     while (!recStack.isEmpty()) {
+//         recStack.pop();
+//         result += 1.1;
+//     }
+
+//     return result;
+//     // TODO
+// }
 
 double gStack(unsigned i) {
-    // TODO
+    ArrayStack<Frame> frameStack;  // it's a stack of frames....a stack frame even :D
+
+    frameStack.push({i, false});
+
+    double result = 0.0;
+
+    while (!frameStack.isEmpty()) {  // build up "frame" stack in descending i value and then pop it away 
+        Frame top = frameStack.peek();
+        frameStack.pop();
+
+        if (top.i == 0) {  //base case
+            result += 3.2;
+        } else if (!top.done) { // not base case and we haven't processed frame, starts at largest i
+            top.done = true;
+            frameStack.push(top); // haven't reached 0, so push i value on top for now
+            frameStack.push({top.i-1, false});  // dec i and push on top 
+        } else {
+            result += 1.1;  // stack will have multiple frames with i's in ascending order, and all have been processed
+        }
+    }
+    return result;
 }
